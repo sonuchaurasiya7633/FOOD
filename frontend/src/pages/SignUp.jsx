@@ -20,6 +20,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
+  const [err, setErr] = useState("");
 
   const handleSignUp = async () => {
     try {
@@ -29,33 +30,35 @@ const SignUp = () => {
         { withCredentials: true }
       );
       console.log(result);
+      setErr("");
     } catch (error) {
-      console.log(error);
+      setErr(error.response.data.message);
     }
   };
 
-const handleGoogleAuth = async () => {
-  if (!mobile) {
-    return alert("mobile no. required");
-  }
-  const provider = new GoogleAuthProvider();
-  try {
-    const result = await signInWithPopup(auth, provider); // <-- await here
-    const { data } = await axios.post(
-      `${serverUrl}/api/auth/google-auth`,
-      {
-        fullName: result.user.displayName,
-        email: result.user.email,
-        role,
-        mobile,
-      },
-      { withCredentials: true }
-    );
-    console.log(data);
-  } catch (error) {
-    console.log(error);
-  }
-}
+  const handleGoogleAuth = async () => {
+    if (!mobile) {
+      return setErr("mobile no is required");
+    }
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          fullName: result.user.displayName,
+          email: result.user.email,
+          role,
+          mobile,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
+      setErr("");
+    } catch (error) {
+      setErr(error.response.data.message);
+    }
+  };
 
   return (
     <div
@@ -97,6 +100,7 @@ const handleGoogleAuth = async () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setFullName(e.target.value)}
             value={fullName}
+            required
           />
         </div>
 
@@ -114,6 +118,7 @@ const handleGoogleAuth = async () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setEmail(e.target.value)}
             value={email}
+            required
           />
         </div>
 
@@ -131,6 +136,7 @@ const handleGoogleAuth = async () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setMobile(e.target.value)}
             value={mobile}
+            required
           />
         </div>
 
@@ -149,6 +155,7 @@ const handleGoogleAuth = async () => {
               style={{ border: `1px solid ${borderColor}` }}
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
             <button
               type="button"
@@ -156,7 +163,11 @@ const handleGoogleAuth = async () => {
               text-gray-500 hover:text-orange-500 transition-colors"
               onClick={() => setShowPassword((prev) => !prev)}
             >
-              {!showPassword ? <FaRegEye size={18} /> : <FaEyeSlash size={18} />}
+              {!showPassword ? (
+                <FaRegEye size={18} />
+              ) : (
+                <FaEyeSlash size={18} />
+              )}
             </button>
           </div>
         </div>
@@ -178,7 +189,8 @@ const handleGoogleAuth = async () => {
                 style={
                   role === r
                     ? {
-                        background: "linear-gradient(to right, #f97316, #ec4899)",
+                        background:
+                          "linear-gradient(to right, #f97316, #ec4899)",
                         color: "white",
                         boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
                       }
@@ -207,6 +219,14 @@ const handleGoogleAuth = async () => {
           Sign Up
         </button>
 
+        {err && (
+          <div className="flex items-center justify-center mt-3">
+            <p className="text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg px-4 py-2 shadow-sm animate-shake">
+              ⚠️ {err}
+            </p>
+          </div>
+        )}
+
         {/* Google SignUp */}
         <button
           className="w-full flex items-center justify-center gap-3 mt-4 
@@ -214,7 +234,8 @@ const handleGoogleAuth = async () => {
           text-gray-700 font-medium shadow-md 
           hover:shadow-lg hover:bg-gray-50 transition-all duration-300 
           text-sm sm:text-base"
-          style={{ border: `1px solid ${borderColor}` }} onClick={handleGoogleAuth}
+          style={{ border: `1px solid ${borderColor}` }}
+          onClick={handleGoogleAuth}
         >
           <FcGoogle size={22} />
           <span>Sign up with Google</span>

@@ -86,6 +86,7 @@ const ForgotPassword = () => {
                 placeholder="Enter your email"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
+                required
               />
             </div>
             <button
@@ -116,6 +117,7 @@ const ForgotPassword = () => {
                 placeholder="Enter OTP"
                 onChange={(e) => setOtp(e.target.value)}
                 value={otp}
+                  required
               />
             </div>
             <button
@@ -146,6 +148,7 @@ const ForgotPassword = () => {
                 placeholder="Enter New Password"
                 onChange={(e) => setNewPassword(e.target.value)}
                 value={newPassword}
+                  required
               />
             </div>
 
@@ -162,6 +165,7 @@ const ForgotPassword = () => {
                 placeholder="Enter Confirm Password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}
+                  required
               />
             </div>
             <button

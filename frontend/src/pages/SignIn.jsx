@@ -4,6 +4,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const SignIn = () => {
   const primaryColor = "#f97316"; // Softer orange
@@ -16,7 +18,7 @@ const SignIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [err, setErr] = useState("");
   const handleSignIn = async () => {
     try {
       const result = await axios.post(
@@ -25,6 +27,24 @@ const SignIn = () => {
         { withCredentials: true }
       );
       console.log(result);
+      setErr("");
+    } catch (error) {
+      setErr(error.response.data.message);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-auth`,
+        {
+          email: result.user.email,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -70,6 +90,7 @@ const SignIn = () => {
             style={{ border: `1px solid ${borderColor}` }}
             onChange={(e) => setEmail(e.target.value)}
             value={email}
+            required
           />
         </div>
 
@@ -88,6 +109,7 @@ const SignIn = () => {
               style={{ border: `1px solid ${borderColor}` }}
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required
             />
             <button
               type="button"
@@ -95,7 +117,11 @@ const SignIn = () => {
               text-gray-500 hover:text-orange-500 transition-colors"
               onClick={() => setShowPassword((prev) => !prev)}
             >
-              {!showPassword ? <FaRegEye size={18} /> : <FaEyeSlash size={18} />}
+              {!showPassword ? (
+                <FaRegEye size={18} />
+              ) : (
+                <FaEyeSlash size={18} />
+              )}
             </button>
           </div>
         </div>
@@ -104,7 +130,7 @@ const SignIn = () => {
         <div
           className="text-right mb-4 text-orange-600 font-medium text-sm cursor-pointer 
           hover:underline"
-          onClick={()=>navigate("forgot-password")}
+          onClick={() => navigate("forgot-password")}
         >
           Forgot Password?
         </div>
@@ -121,15 +147,23 @@ const SignIn = () => {
         >
           Sign In
         </button>
+        {err && (
+          <div className="flex items-center justify-center mt-3">
+            <p className="text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg px-4 py-2 shadow-sm animate-shake">
+              ⚠️ {err}
+            </p>
+          </div>
+        )}
 
         {/* Google Sign In */}
         <button
           className="w-full flex items-center justify-center gap-3 mt-4 
-          px-5 py-3 border rounded-xl bg-white/80 
+          px-5 py-3 border rounded-xl cursor-pointer bg-white/80 
           text-gray-700 font-medium shadow-md 
           hover:shadow-lg hover:bg-gray-50 transition-all duration-300 
           text-sm sm:text-base"
           style={{ border: `1px solid ${borderColor}` }}
+          onClick={handleGoogleAuth}
         >
           <FcGoogle size={22} />
           <span>Sign In with Google</span>
