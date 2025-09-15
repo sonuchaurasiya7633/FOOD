@@ -6,10 +6,10 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
-
+import { ClipLoader } from "react-spinners";
 const SignUp = () => {
   const primaryColor = "#f97316"; // Softer orange
-  const hoverColor = "#ea580c"; // Darker orange
+
   const bgColor = "#fff7f2"; // Warm background
   const borderColor = "#e5e7eb"; // Neutral border
 
@@ -21,8 +21,10 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
@@ -31,8 +33,10 @@ const SignUp = () => {
       );
       console.log(result);
       setErr("");
+      setLoading(false);
     } catch (error) {
-      setErr(error.response.data.message);
+      setErr(error?.response?.data?.message);
+      setLoading(false);
     }
   };
 
@@ -56,7 +60,7 @@ const SignUp = () => {
       console.log(data);
       setErr("");
     } catch (error) {
-      setErr(error.response.data.message);
+      setErr(error?.response?.data?.message);
     }
   };
 
@@ -110,7 +114,7 @@ const SignUp = () => {
             Email
           </label>
           <input
-            type="text"
+            type="email"
             className="w-full border rounded-xl px-4 py-3 bg-gray-50/60 
             focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 
             transition-all duration-300 text-sm sm:text-base"
@@ -215,8 +219,23 @@ const SignUp = () => {
           bg-gradient-to-r from-orange-500 to-pink-500
           hover:from-orange-600 hover:to-pink-600 hover:shadow-xl"
           onClick={handleSignUp}
+          disabled={loading}
         >
-          Sign Up
+          {loading ? (
+            <ClipLoader
+              size={20}
+              color="transparent" 
+              cssOverride={{
+                border: "3px solid transparent",
+                borderTop: "3px solid",
+                borderImage:
+                  "conic-gradient(#ec4899, #6366f1, #22c55e, #f59e0b) 1",
+                borderRadius: "50%",
+              }}
+            />
+          ) : (
+            " Sign Up"
+          )}
         </button>
 
         {err && (

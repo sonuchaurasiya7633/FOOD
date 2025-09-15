@@ -6,10 +6,8 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
-
+import { ClipLoader } from "react-spinners";
 const SignIn = () => {
-  const primaryColor = "#f97316"; // Softer orange
-  const hoverColor = "#ea580c"; // Darker orange
   const bgColor = "#fff7f2"; // Warm soft background
   const borderColor = "#e5e7eb"; // Neutral border
 
@@ -19,7 +17,10 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleSignIn = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         `${serverUrl}/api/auth/signin`,
@@ -28,8 +29,10 @@ const SignIn = () => {
       );
       console.log(result);
       setErr("");
+      setLoading(false);
     } catch (error) {
-      setErr(error.response.data.message);
+      setErr(error?.response?.data?.message);
+      setLoading(false);
     }
   };
 
@@ -46,7 +49,7 @@ const SignIn = () => {
       );
       console.log(data);
     } catch (error) {
-      console.log(error);
+      setErr(error?.response?.data?.message);
     }
   };
 
@@ -144,8 +147,23 @@ const SignIn = () => {
           bg-gradient-to-r from-orange-500 to-pink-500
           hover:from-orange-600 hover:to-pink-600 hover:shadow-xl"
           onClick={handleSignIn}
+          disabled={loading}
         >
-          Sign In
+          {loading ? (
+            <ClipLoader
+              size={20}
+              color="transparent" // transparent so gradient visible
+              cssOverride={{
+                border: "3px solid transparent",
+                borderTop: "3px solid",
+                borderImage:
+                  "conic-gradient(#ec4899, #6366f1, #22c55e, #f59e0b) 1", 
+                borderRadius: "50%",
+              }}
+            />
+          ) : (
+            " Sign In"
+          )}
         </button>
         {err && (
           <div className="flex items-center justify-center mt-3">
