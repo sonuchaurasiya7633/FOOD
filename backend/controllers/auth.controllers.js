@@ -69,7 +69,7 @@ import { sendOtpMail } from "../utils/mail.js";
   }
 }
 
-export const signOut = (params) =>{
+export const signOut = (req,res) =>{
   try {
     res.clearCookie("token")
     res.status(200).json({message:"Signout successfully"})

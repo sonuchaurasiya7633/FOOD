@@ -7,6 +7,8 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 const SignIn = () => {
   const bgColor = "#fff7f2"; // Warm soft background
   const borderColor = "#e5e7eb"; // Neutral border
@@ -19,6 +21,8 @@ const SignIn = () => {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleSignIn = async () => {
     setLoading(true);
     try {
@@ -27,7 +31,7 @@ const SignIn = () => {
         { email, password },
         { withCredentials: true }
       );
-      console.log(result);
+      dispatch(setUserData(result.data));
       setErr("");
       setLoading(false);
     } catch (error) {
@@ -47,7 +51,7 @@ const SignIn = () => {
         },
         { withCredentials: true }
       );
-      console.log(data);
+      dispatch(setUserData(data));
     } catch (error) {
       setErr(error?.response?.data?.message);
     }
@@ -75,7 +79,7 @@ const SignIn = () => {
         <p className="text-gray-600 mb-8 text-center text-base leading-relaxed">
           Sign in to{" "}
           <span className="font-semibold text-gray-800">
-            enjoy tasty food at your desk 🍕
+            enjoy tasty food at your desk 
           </span>
         </p>
 
@@ -145,7 +149,7 @@ const SignIn = () => {
           shadow-lg shadow-orange-200/50 
           transition-all duration-300 text-white text-sm sm:text-base
           bg-gradient-to-r from-orange-500 to-pink-500
-          hover:from-orange-600 hover:to-pink-600 hover:shadow-xl"
+          hover:from-orange-600 hover:to-pink-600 hover:shadow-xl cursor-pointer"
           onClick={handleSignIn}
           disabled={loading}
         >
@@ -157,7 +161,7 @@ const SignIn = () => {
                 border: "3px solid transparent",
                 borderTop: "3px solid",
                 borderImage:
-                  "conic-gradient(#ec4899, #6366f1, #22c55e, #f59e0b) 1", 
+                  "conic-gradient(#ec4899, #6366f1, #22c55e, #f59e0b) 1",
                 borderRadius: "50%",
               }}
             />

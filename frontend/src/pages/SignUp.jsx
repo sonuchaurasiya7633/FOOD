@@ -7,6 +7,8 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 const SignUp = () => {
   const primaryColor = "#f97316"; // Softer orange
 
@@ -22,6 +24,8 @@ const SignUp = () => {
   const [mobile, setMobile] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+
 
   const handleSignUp = async () => {
     setLoading(true);
@@ -31,7 +35,7 @@ const SignUp = () => {
         { fullName, email, password, mobile, role },
         { withCredentials: true }
       );
-      console.log(result);
+      dispatch(setUserData(result.data))
       setErr("");
       setLoading(false);
     } catch (error) {
@@ -57,7 +61,7 @@ const SignUp = () => {
         },
         { withCredentials: true }
       );
-      console.log(data);
+       dispatch(setUserData(data))
       setErr("");
     } catch (error) {
       setErr(error?.response?.data?.message);
@@ -86,7 +90,7 @@ const SignUp = () => {
         <p className="text-gray-600 mb-8 text-center text-base leading-relaxed">
           Create your account to{" "}
           <span className="font-semibold text-gray-800">
-            enjoy tasty food at your desk 🍕
+            enjoy tasty food at your desk 
           </span>
         </p>
 
@@ -217,7 +221,7 @@ const SignUp = () => {
           rounded-xl px-5 py-3 font-semibold shadow-lg shadow-orange-200/50 
           transition-all duration-300 text-white text-sm sm:text-base
           bg-gradient-to-r from-orange-500 to-pink-500
-          hover:from-orange-600 hover:to-pink-600 hover:shadow-xl"
+          hover:from-orange-600 hover:to-pink-600 hover:shadow-xl cursor-pointer"
           onClick={handleSignUp}
           disabled={loading}
         >
@@ -252,7 +256,7 @@ const SignUp = () => {
           px-5 py-3 border rounded-xl bg-white/80 
           text-gray-700 font-medium shadow-md 
           hover:shadow-lg hover:bg-gray-50 transition-all duration-300 
-          text-sm sm:text-base"
+          text-sm sm:text-base cursor-pointer"
           style={{ border: `1px solid ${borderColor}` }}
           onClick={handleGoogleAuth}
         >
